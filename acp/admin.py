@@ -9,6 +9,12 @@ class MailDomainAdmin(admin.ModelAdmin):
 	list_display = ('__unicode__', 'notes', 'position')
 	list_editable = ('position',)
 
+	fieldsets = (
+		('', {
+			'fields': ('domain', 'notes'),
+		}),
+	)
+
 	class Media:
 		js = ['/static/js/admin_list_reorder.js',]
 
