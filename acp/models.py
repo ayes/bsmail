@@ -49,19 +49,11 @@ class MailQuota(models.Model):
 		verbose_name_plural = 'Mail quotas'
 
 class MailUser(models.Model):
-	QUOTA_CHOICES = (
-		(10, '10 megabytes'),
-		(50, '50 megabytes'),
-		(100, '100 megabytes'),
-		(1024, '1 gigabyte'),
-		(0, 'unlimited space'),
-	)
-
 	def __unicode__(self):
 		return self.username
 
 	def mailbox_size(self):
-		return self.get_quota_display()
+		return self.quota.title
 
 	username = models.CharField('Username', max_length = 64, help_text = 'Left part (before @ sign) of the e-mail address')
 	domain = models.ForeignKey(MailDomain, verbose_name = 'Domain')
