@@ -3,18 +3,29 @@
 from django.db import models
 from django.forms import ValidationError
 
-class MailDomain(models.Model):
-	domain = models.CharField(u'Domain name', max_length = 64, help_text = 'Domain name to serve (example: bsmsite.com)', unique = True)
-	notes = models.CharField(u'Notes', max_length = 1024, help_text = 'Anything about this domain')
-	position = models.IntegerField(u'Position', help_text = 'Position in the drop-down list in mail.bsmsite.com', blank = True)
+class Orderable(models.Model):
+	position = models.IntegerField(u'Position', blank = True)
 
 	def save(self, *args, **kwargs):
 		if self.position is None:
 			try:
-				last = MailDomain.objects.order_by('-position')[0]
+				last = self.objects.order_by('-position')[0]
 				self.position = last.position + 1
 			except:
 				self.position = 0
+		
+		return super(Orderable, self).save(*args, **kwargs)
+
+	def __unicode__(self):
+		return self.address
+
+	class Meta:
+		abstract = True
+		ordering = ('position',)
+
+class MailDomain(Orderable):
+	domain = models.CharField(u'Domain name', max_length = 64, help_text = 'Domain name to serve (example: bsmsite.com)', unique = True)
+	notes = models.CharField(u'Notes', max_length = 1024, help_text = 'Anything about this domain')
 
 	def __unicode__(self):
 		return self.domain
